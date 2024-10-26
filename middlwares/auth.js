@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken'
+import { User } from '../models/User.js'
+
 export default (req, res, next) => {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
@@ -10,7 +12,7 @@ export default (req, res, next) => {
       return res.status(403).json({ error: 'Invalid token' })
     }
 
-    req.user = user
+    req.user = await User.findOne({ where: { user_id: +user.user_id } });
 
     next()
   })

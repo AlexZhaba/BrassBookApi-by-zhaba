@@ -171,3 +171,34 @@ export const passwordUpdate = async (req, res) => {
   user.save();
   return res.sendStatus(200)
 }
+
+export const updateUser = async (req, res) => {
+  const { first_name, second_name, email } = req.body;
+
+  const userWithEmail = await User.findOne({ where: { email: email } });
+  if (userWithEmail && userWithEmail.user_id !== req.user.user_id) {
+    return res.status(400).json({ errorCode: 'USER_WITH_EMAIL_ALREADY_EXIST' });
+  }
+
+  try {
+    await User.update({ first_name, second_name, email }, { where: { user_id: req.user.user_id } });
+    const updatedUser = User.findOne({ where: { user_id: req.user.user_id } });
+    return res.status(200).json({
+      user: updatedUser
+    });
+
+  } catch (cause) {
+    return res.status(400).json({
+      errorCode: 'INVALID_DATA',
+    });
+  }
+}
+
+export const updateAvatar = async (req, res) => {
+  console.log(req.file)
+  const avatar = req.file;
+  const user = await User.findOne({ where: { user_id: req.user.user_id } });
+  user.avatar = `${process.env.IMAGE_HOST}/${avatar.path}`;
+  await user.save();
+  return res.status(200).json({ user });
+}
