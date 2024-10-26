@@ -1,7 +1,7 @@
-import {User} from "../models/User.js";
-import {comparePassword, generateAccessToken, generateRefreshToken, hashPassword} from "../helpers/auth.js";
+import { User } from "../models/User.js";
+import { comparePassword, generateAccessToken, generateRefreshToken, hashPassword } from "../helpers/auth.js";
 import * as crypto from "crypto";
-import {codeSend} from "../helpers/mail.js";
+import { codeSend } from "../helpers/mail.js";
 import jwt from "jsonwebtoken";
 import 'dotenv/config'
 
@@ -11,12 +11,12 @@ export const registerUser = async (req, res) => {
 
   if (!email) {
     res.status(400);
-    return res.json({error: 'email обязятелен'})
+    return res.json({ error: 'email обязятелен' })
   }
 
   if (!password) {
     res.status(400);
-    return res.json({error: 'пароль обязятелен'})
+    return res.json({ error: 'пароль обязятелен' })
   }
 
   if ((await User.findAll({
@@ -25,7 +25,7 @@ export const registerUser = async (req, res) => {
     }
   })).length > 0) {
     res.status(400);
-    return res.json({error: 'Такой пользователь уже есть'});
+    return res.json({ error: 'Такой пользователь уже есть' });
   }
   //TODO
   //остальная валидация
@@ -36,9 +36,9 @@ export const registerUser = async (req, res) => {
   // const codeDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
   const codeDate = Date.now();
 
-  const user = await User.create({...req.body, password: hashedPassword, code, code_date: codeDate});
+  const user = await User.create({ ...req.body, password: hashedPassword, code, code_date: codeDate });
   await codeSend(email, code).catch(console.error);
-  return res.json({id: user.dataValues.user_id});
+  return res.json({ id: user.dataValues.user_id });
 }
 
 export const verifyUser = async (req, res) => {
@@ -46,7 +46,7 @@ export const verifyUser = async (req, res) => {
   const user = await User.findOne({ where: { email: email } });
   if ((Date.now() - user.code_date) / 1000 > 15 * 60) {
     res.status(400);
-    return res.json({error: 'код устарел'});
+    return res.json({ error: 'код устарел' });
   }
   if (code === user.code) {
     user.status = 'activate';
@@ -55,15 +55,15 @@ export const verifyUser = async (req, res) => {
   }
 
   res.status(400);
-  return res.json({error: 'Неправильный код'});
+  return res.json({ error: 'Неправильный код' });
 }
 
 export const sendCode = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ where: { email: email } });
-  if (!user){
+  if (!user) {
     res.status(400);
-    return res.json({error: 'Такого пользователя не существует.'})
+    return res.json({ error: 'Такого пользователя не существует.' })
   }
   const code = crypto.randomInt(100000, 999999);
   user.code = code;
@@ -78,12 +78,12 @@ export const loginUser = async (req, res) => {
 
   if (!email) {
     res.status(400);
-    return res.json({error: 'email обязятелен'})
+    return res.json({ error: 'email обязятелен' })
   }
 
   if (!password) {
     res.status(400);
-    return res.json({error: 'пароль обязятелен'})
+    return res.json({ error: 'пароль обязятелен' })
   }
 
   const user = await User.findOne({ where: { email: email } });
@@ -100,27 +100,58 @@ export const loginUser = async (req, res) => {
 
   const accessToken = await generateAccessToken(user.dataValues.user_id, email);
   const refreshToken = await generateRefreshToken(user.dataValues.user_id, email);
-  res.cookie('refreshToken', refreshToken, {maxAge: 60 * 24 * 60 * 60 * 1000, httpOnly: true });
-  return res.json({'access_token': accessToken, 'refresh_token': refreshToken});
+  res.cookie('refreshToken', refreshToken, { maxAge: 60 * 24 * 60 * 60 * 1000, httpOnly: true });
+  return res.json({ accessToken });
 }
+
+export const checkAccessToken = async (req, res) => {
+  const { accessToken } = req.body;
+
+  if (!accessToken) {
+    return res.status(400).json({
+      errorCode: 'EMPTY_BODY'
+    })
+  }
+
+  let userData = null;
+  try {
+    userData = jwt.verify(accessToken, process.env.JWT_SECRET)
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({
+        errorCode: 'EXPIRED_TOKEN'
+      });
+    }
+    return res.status(401).json({
+      errorCode: 'INVALID_ERROR'
+    })
+  }
+
+  const user = await User.findOne({ where: { user_id: +userData.user_id } })
+
+  return res.status(200).json({
+    user,
+  })
+}
+
 
 export const refreshToken = async (req, res) => {
   let user;
-  if (!req.cookies.refreshToken){
+  if (!req.cookies.refreshToken) {
     res.status(400);
-    return res.json({error: 'в куках нет рефреш токена'});
+    return res.json({ error: 'в куках нет рефреш токена' });
   }
   await jwt.verify(req.cookies.refreshToken, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {
       res.status(400);
-      return res.json({error: 'токен не валиден, необходимо войти еще раз'});
+      return res.json({ error: 'токен не валиден, необходимо войти еще раз' });
     }
     user = await User.findOne({ where: { user_id: +decoded.user_id } });
   })
   const accessToken = await generateAccessToken(user.dataValues.user_id, user.dataValues.email);
   const refreshToken = await generateRefreshToken(user.dataValues.user_id, user.dataValues.email);
-  res.cookie('refreshToken', refreshToken, {maxAge: 60 * 24 * 60 * 60 * 1000, httpOnly: true });
-  return res.json({'access_token': accessToken, 'refresh_token': refreshToken});
+  res.cookie('refreshToken', refreshToken, { maxAge: 60 * 24 * 60 * 60 * 1000, httpOnly: true });
+  return res.json({ accessToken });
 }
 
 
@@ -129,11 +160,11 @@ export const passwordUpdate = async (req, res) => {
   const user = await User.findOne({ where: { email: email } });
   if ((Date.now() - user.code_date) / 1000 > 15 * 60) {
     res.status(400);
-    return res.json({error: 'код устарел'});
+    return res.json({ error: 'код устарел' });
   }
   if (code !== user.code) {
     res.status(400)
-    return res.json({error: 'Неправильный код'})
+    return res.json({ error: 'Неправильный код' })
   }
   console.log(newPassword)
   user.password = await hashPassword(newPassword)

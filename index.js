@@ -1,16 +1,16 @@
 import express from 'express';
 import 'dotenv/config';
 import './dbConnect.js';
-import {authRouter} from "./routes/authRoutes.js";
+import { authRouter } from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import {staticFilesRouter} from "./routes/staticFilesRouter.js";
+import { staticFilesRouter } from "./routes/staticFilesRouter.js";
 import compositionsRouter from "./routes/compositionsRouter.js"
 import compositionRouter from "./routes/compositionRouter.js";
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // отдает статические файлы

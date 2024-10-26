@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  brassbook_db:
+    image: postgres:13.4-alpine
+    ports:
+      - "6433:5432"
+    user: postgres
+    env_file:
+      - ../.env
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      timeout: 45s
+      interval: 10s
+      retries: 1
