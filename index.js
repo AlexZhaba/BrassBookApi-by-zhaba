@@ -15,6 +15,7 @@ app.use(cookieParser());
 
 // отдает статические файлы
 app.use('/compositions', express.static('compositions'))
+app.use('/images', express.static('images'))
 //routes
 app.use('/v1/auth', authRouter)
 app.use('/v1/user/compositions', compositionsRouter)
@@ -25,3 +26,4 @@ app.use('/v1/user/composition', compositionRouter)
 
 const port = 8000;
 app.listen(port, () => console.log(`server is running on port: ${port}`));
+

@@ -13,12 +13,15 @@ const User = sequelize.define('UserModel', {
   second_name: {type: DataTypes.CHAR(50), allowNull: true},
   company_name: {type: DataTypes.CHAR(50), allowNull: true},
   company_role: {type: DataTypes.CHAR(50), allowNull: true},
+  avatar: {type: DataTypes.CHAR(200), allowNull: true},
   inn: {type: DataTypes.BIGINT, allowNull: true}
 }, {tableName: 'users', timestamps: false});
 
 // создаст таблицу в бд, если ее нет
 async function createTable(){
-  await User.sync();
+  await User.sync({
+    alter: true,
+  });
 }
 
 createTable();

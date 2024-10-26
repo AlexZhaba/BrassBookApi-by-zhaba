@@ -156,18 +156,62 @@ export const refreshToken = async (req, res) => {
 
 
 export const passwordUpdate = async (req, res) => {
-  const { email, code, newPassword } = req.body;
-  const user = await User.findOne({ where: { email: email } });
-  if ((Date.now() - user.code_date) / 1000 > 15 * 60) {
-    res.status(400);
-    return res.json({ error: 'код устарел' });
+  const { newPassword, currentPassword } = req.body;
+  // const user = await User.findOne({ where: { email: email } });
+  // if ((Date.now() - user.code_date) / 1000 > 15 * 60) {
+  //   res.status(400);
+  //   return res.json({ error: 'код устарел' });
+  // }
+  // if (code !== user.code) {
+  //   res.status(400)
+  //   return res.json({ error: 'Неправильный код' })
+  // }
+  // console.log(newPassword)
+  
+
+  
+  const hashedCurrentPassword = await hashPassword(currentPassword);
+  console.log('pasd', req.user.password)
+  if (req.user.password.trim() !== hashedCurrentPassword) {
+    return res.status(400).json({
+      errorCode: 'INVALID_PASSWORD'
+    })
   }
-  if (code !== user.code) {
-    res.status(400)
-    return res.json({ error: 'Неправильный код' })
+  
+  req.user.password = await hashPassword(newPassword)
+  req.user.save();
+  return res.status(200).json({
+    user: req.user
+  })
+}
+
+export const updateUser = async (req, res) => {
+  const { first_name, second_name, email } = req.body;
+
+  const userWithEmail = await User.findOne({ where: { email: email } });
+  if (userWithEmail && userWithEmail.user_id !== req.user.user_id) {
+    return res.status(400).json({ errorCode: 'USER_WITH_EMAIL_ALREADY_EXIST' });
   }
-  console.log(newPassword)
-  user.password = await hashPassword(newPassword)
-  user.save();
-  return res.sendStatus(200)
+
+  try {
+    await User.update({ first_name, second_name, email }, { where: { user_id: req.user.user_id } });
+    const updatedUser = await User.findOne({ where: { user_id: req.user.user_id } });
+    return res.status(200).json({
+      user: updatedUser
+    });
+
+  } catch (cause) {
+    return res.status(400).json({
+      errorCode: 'INVALID_DATA',
+    });
+  }
+}
+
+export const updateAvatar = async (req, res) => {
+  console.log(req.file)
+  const avatar = req.file;
+  const user = await User.findOne({ where: { user_id: req.user.user_id } });
+  user.avatar = `${process.env.IMAGE_HOST}/${avatar.path}`;
+  await user.save();
+  return res.status(200).json({ user });
 }
