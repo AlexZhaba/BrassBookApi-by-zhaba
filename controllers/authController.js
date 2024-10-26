@@ -156,20 +156,33 @@ export const refreshToken = async (req, res) => {
 
 
 export const passwordUpdate = async (req, res) => {
-  const { email, code, newPassword } = req.body;
-  const user = await User.findOne({ where: { email: email } });
-  if ((Date.now() - user.code_date) / 1000 > 15 * 60) {
-    res.status(400);
-    return res.json({ error: 'код устарел' });
+  const { newPassword, currentPassword } = req.body;
+  // const user = await User.findOne({ where: { email: email } });
+  // if ((Date.now() - user.code_date) / 1000 > 15 * 60) {
+  //   res.status(400);
+  //   return res.json({ error: 'код устарел' });
+  // }
+  // if (code !== user.code) {
+  //   res.status(400)
+  //   return res.json({ error: 'Неправильный код' })
+  // }
+  // console.log(newPassword)
+  
+
+  
+  const hashedCurrentPassword = await hashPassword(currentPassword);
+  console.log('pasd', req.user.password)
+  if (req.user.password.trim() !== hashedCurrentPassword) {
+    return res.status(400).json({
+      errorCode: 'INVALID_PASSWORD'
+    })
   }
-  if (code !== user.code) {
-    res.status(400)
-    return res.json({ error: 'Неправильный код' })
-  }
-  console.log(newPassword)
-  user.password = await hashPassword(newPassword)
-  user.save();
-  return res.sendStatus(200)
+  
+  req.user.password = await hashPassword(newPassword)
+  req.user.save();
+  return res.status(200).json({
+    user: req.user
+  })
 }
 
 export const updateUser = async (req, res) => {
@@ -182,7 +195,7 @@ export const updateUser = async (req, res) => {
 
   try {
     await User.update({ first_name, second_name, email }, { where: { user_id: req.user.user_id } });
-    const updatedUser = User.findOne({ where: { user_id: req.user.user_id } });
+    const updatedUser = await User.findOne({ where: { user_id: req.user.user_id } });
     return res.status(200).json({
       user: updatedUser
     });
