@@ -1,5 +1,5 @@
 import express from "express";
-import {loginUser, registerUser, verifyUser, sendCode, refreshToken, passwordUpdate} from "../controllers/authController.js";
+import { loginUser, registerUser, verifyUser, sendCode, refreshToken, passwordUpdate, checkAccessToken } from "../controllers/authController.js";
 import cors from "cors";
 
 const authRouter = express.Router();
@@ -12,6 +12,7 @@ authRouter.use(
 
 authRouter.post('/registration', registerUser);
 authRouter.post('/login', loginUser);
+authRouter.post('/check', checkAccessToken);
 authRouter.put('/verifyuser', verifyUser);
 authRouter.put('/sendcode', sendCode);
 authRouter.get('/refresh', refreshToken);

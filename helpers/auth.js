@@ -11,9 +11,9 @@ export const comparePassword = async (password, hashed) => {
 }
 
 export const generateAccessToken = async (user_id, email) => {
-  return jwt.sign({user_id, email}, process.env.JWT_SECRET, {expiresIn: '15m'});
+  return jwt.sign({ user_id, email }, process.env.JWT_SECRET, { expiresIn: '15m' });
 }
 
 export const generateRefreshToken = async (user_id, email) => {
-  return await jwt.sign({user_id, email}, process.env.JWT_SECRET, {expiresIn: '60d'});
+  return await jwt.sign({ user_id, email }, process.env.JWT_SECRET, { expiresIn: '60d' });
 }
