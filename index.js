@@ -7,10 +7,11 @@ import cors from "cors";
 import { staticFilesRouter } from "./routes/staticFilesRouter.js";
 import compositionsRouter from "./routes/compositionsRouter.js"
 import compositionRouter from "./routes/compositionRouter.js";
+import albumsRouter from './routes/albumsRouter.js';
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // отдает статические файлы
@@ -20,6 +21,7 @@ app.use('/images', express.static('images'))
 app.use('/v1/auth', authRouter)
 app.use('/v1/user/compositions', compositionsRouter)
 app.use('/v1/user/composition', compositionRouter)
+app.use('/v1/albums', albumsRouter)
 // Нет смысла использовать
 // app.use('/v1/staticFiles', staticFilesRouter)
 
