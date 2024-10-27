@@ -3,7 +3,7 @@ import multer from "multer";
 import cors from "cors";
 
 import authenticate from "../middlwares/auth.js";
-import { createAlbum, getAlbums } from "../controllers/albumController.js";
+import { createAlbum, deleteAlbum, getAlbums, updateAlbum } from "../controllers/albumController.js";
 
 const albumsRouter = express.Router();
 
@@ -25,5 +25,7 @@ const upload = multer({ storage })
 
 albumsRouter.post('/', authenticate, upload.single('image'), createAlbum)
 albumsRouter.get('/', authenticate, getAlbums)
+albumsRouter.delete('/:id', authenticate, deleteAlbum)
+albumsRouter.patch('/:id', authenticate, upload.single('image'), updateAlbum)
 
 export default albumsRouter

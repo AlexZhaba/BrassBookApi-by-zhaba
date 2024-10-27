@@ -33,14 +33,15 @@ export const getAlbums = async (req, res) => {
 }
 
 export const deleteAlbum = async (req, res) => {
-  const album = await Album.destroy({ where: { id: req.params.id, user_id: req.user.user_id } })
+  const album = await Album.destroy({ where: { album_id: req.params.id, user_id: req.user.user_id } })
   res.status(200).json({ album })
 }
 
 export const updateAlbum = async (req, res) => {
-  const album = await Album.update({
-    name: req.body.name,
-    image: req?.file?.path ? `${process.env.IMAGE_HOST}/${req.file.path}` : '',
-  }, { where: { id: req.params.id, user_id: req.user.user_id } })
+  const updateObject = { name: req.body.name };
+  if (req?.file?.path) {
+    updateObject.image = `${process.env.IMAGE_HOST}/${req.file.path}`
+  }
+  const album = await Album.update(updateObject, { where: { album_id: req.params.id, user_id: req.user.user_id } })
   res.status(200).json({ album })
 }
