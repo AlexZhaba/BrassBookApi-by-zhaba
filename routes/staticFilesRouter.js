@@ -6,9 +6,10 @@ const staticFilesRouter = express.Router();
 staticFilesRouter.use(
   cors({
     credentials: true,
-    origin: 'http://localhost:5173'
+    origin: process.env.FRONTEND_ADDRESS
   })
 );
+
 staticFilesRouter.get('/audio/:id', getAudio)
 
 export { staticFilesRouter }

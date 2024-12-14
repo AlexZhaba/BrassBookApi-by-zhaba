@@ -7,13 +7,13 @@ export const codeSend = async (toMail, code) => {
     port: 465,
     secure: true,
     auth: {
-      user: 'brass.book',
+      user: 'Gazinyr19',
       pass: process.env.MAIL_PASS
     }
   })
 
   const mailOptions = {
-    from: 'brass.book@yandex.ru',
+    from: 'Gazinyr19@yandex.ru',
     to: toMail,
     subject: 'Hello World!',
     html: `
