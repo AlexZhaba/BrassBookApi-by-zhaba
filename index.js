@@ -22,6 +22,10 @@ app.use('/v1/auth', authRouter)
 app.use('/v1/user/compositions', compositionsRouter)
 app.use('/v1/user/composition', compositionRouter)
 app.use('/v1/albums', albumsRouter)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
 // Нет смысла использовать
 // app.use('/v1/staticFiles', staticFilesRouter)
 

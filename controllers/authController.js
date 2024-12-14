@@ -11,12 +11,12 @@ export const registerUser = async (req, res) => {
 
   if (!email) {
     res.status(400);
-    return res.json({ error: 'email обязятелен' })
+    return res.json({ error: 'email обязателен' })
   }
 
   if (!password) {
     res.status(400);
-    return res.json({ error: 'пароль обязятелен' })
+    return res.json({ error: 'пароль обязателен' })
   }
 
   if ((await User.findAll({
