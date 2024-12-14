@@ -1,7 +1,7 @@
 import sequilize from "sequelize";
 import { Album } from "../models/Album.js";
 
-export const createAlbum = async (req, res) => {
+export const createAlbum = async (req, res, next) => {
   try {
     const album  = await Album.create({
       user_id: req.user.user_id,
@@ -14,7 +14,7 @@ export const createAlbum = async (req, res) => {
   }
 }
 
-export const getAlbums = async (req, res) => {
+export const getAlbums = async (req, res, next) => {
   try {
     const nameFilter = req.query?.name;
     const searchObject =  { where: { user_id: req.user.user_id } };
@@ -40,7 +40,7 @@ export const getAlbums = async (req, res) => {
   }
 }
 
-export const deleteAlbum = async (req, res) => {
+export const deleteAlbum = async (req, res, next) => {
   try {
     const album = await Album.destroy({ where: { album_id: req.params.id, user_id: req.user.user_id } })
     res.status(200).json({ album })
@@ -49,7 +49,7 @@ export const deleteAlbum = async (req, res) => {
   }
 }
 
-export const updateAlbum = async (req, res) => {
+export const updateAlbum = async (req, res, next) => {
   try {
     const updateObject = { name: req.body.name };
     if (req?.file?.path) {
