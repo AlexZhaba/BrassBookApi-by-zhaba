@@ -22,8 +22,9 @@ services:
     env_file:
       - .env
     environment:
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=db
+      - POSTGRES_DB=postgres
     healthcheck:
       test: ["CMD", "pg_isready"]
       timeout: 45s
