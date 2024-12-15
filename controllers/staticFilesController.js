@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
-export const getAudio = async (req, res, next) => {
+export const getAudio = async (req, res) => {
   try {
     const filePath = path.join(path.dirname(fileURLToPath(import.meta.url)), '../compositions/audio', 'Lyudvig_van_Betkhoven_Minuet.mp3')
 

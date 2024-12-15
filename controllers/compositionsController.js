@@ -1,7 +1,7 @@
 import {Composition} from "../models/Composition.js";
 
 const compositionsController = {
-  getAllCompositions: async (req, res, next) => {
+  getAllCompositions: async (req, res) => {
     try {
       const { page, size } = req.params;
 

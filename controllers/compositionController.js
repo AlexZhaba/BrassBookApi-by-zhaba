@@ -1,6 +1,6 @@
 import {UserOwnComposition} from "../models/UserOwnComposition.js";
 const compositionController = {
-  saveOwnComposition: async (req, res, next) => {
+  saveOwnComposition: async (req, res) => {
     try {
       const { id } = req.params
 
