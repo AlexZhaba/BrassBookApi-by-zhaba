@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import 'dotenv/config'
 
 
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -45,7 +45,7 @@ export const registerUser = async (req, res) => {
   }
 }
 
-export const verifyUser = async (req, res) => {
+export const verifyUser = async (req, res, next) => {
   try {
     const { email, code } = req.body;
     const user = await User.findOne({ where: { email: email } });
@@ -66,7 +66,7 @@ export const verifyUser = async (req, res) => {
   }
 }
 
-export const sendCode = async (req, res) => {
+export const sendCode = async (req, res, next) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ where: { email: email } });
@@ -85,7 +85,7 @@ export const sendCode = async (req, res) => {
   }
 }
 
-export const loginUser = async (req, res) => {
+export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -120,7 +120,7 @@ export const loginUser = async (req, res) => {
   }
 }
 
-export const checkAccessToken = async (req, res) => {
+export const checkAccessToken = async (req, res, next) => {
   try {
     const { accessToken } = req.body;
 
@@ -155,7 +155,7 @@ export const checkAccessToken = async (req, res) => {
 }
 
 
-export const refreshToken = async (req, res) => {
+export const refreshToken = async (req, res, next) => {
   try {
     let user;
     if (!req.cookies.refreshToken) {
@@ -179,7 +179,7 @@ export const refreshToken = async (req, res) => {
 }
 
 
-export const passwordUpdate = async (req, res) => {
+export const passwordUpdate = async (req, res, next) => {
   try {
     const { newPassword, currentPassword } = req.body;
     // const user = await User.findOne({ where: { email: email } });
@@ -213,7 +213,7 @@ export const passwordUpdate = async (req, res) => {
   }
 }
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
   try {
     const { first_name, second_name, email } = req.body;
 
@@ -239,7 +239,7 @@ export const updateUser = async (req, res) => {
   }
 }
 
-export const updateAvatar = async (req, res) => {
+export const updateAvatar = async (req, res, next) => {
   try {
     console.log(req.file)
     const avatar = req.file;
