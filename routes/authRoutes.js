@@ -1,16 +1,10 @@
 import express from "express";
 import { loginUser, registerUser, verifyUser, sendCode, refreshToken, passwordUpdate, checkAccessToken, updateUser, updateAvatar } from "../controllers/authController.js";
 import authenticate from "../middlwares/auth.js";
-import cors from "cors";
 import multer from "multer";
 
 const authRouter = express.Router();
-authRouter.use(
-  cors({
-    credentials: true,
-    origin: process.env.FRONTEND_ADDRESS
-  })
-);
+
 
 const storage = multer.diskStorage({
   destination: 'images/avatars',

@@ -10,6 +10,7 @@ import compositionRouter from "./routes/compositionRouter.js";
 import albumsRouter from './routes/albumsRouter.js';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

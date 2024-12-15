@@ -1,18 +1,11 @@
 import express from "express";
 import multer from "multer";
-import cors from "cors";
 
 import authenticate from "../middlwares/auth.js";
 import { createAlbum, deleteAlbum, getAlbums, updateAlbum } from "../controllers/albumController.js";
 
 const albumsRouter = express.Router();
 
-albumsRouter.use(
-  cors({
-    credentials: true,
-    origin: process.env.FRONTEND_ADDRESS
-  })
-);
 
 const storage = multer.diskStorage({
   destination: 'images/ablums-preview',
